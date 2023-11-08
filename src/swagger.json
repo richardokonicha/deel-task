@@ -2,15 +2,15 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Deel Backend API",
-     "description": "API documentation for the Deel backend application. ! This API provides endpoints for managing contracts, jobs, and profiles.\n\n## Authentication and Testing\n\nTo interact with this API on Swagger UI, you'll need to follow these steps:\n\n1. **Authorize Swagger UI**: Click the \"Authorize\" button on the top right corner of Swagger UI. In the \"Value\" field, enter your `profile_id` and click \"Authorize\". This `profile_id` will be used for authentication.\n\n2. **Testing Endpoints**:\n   - Browse through the available endpoints in the Swagger UI interface.\n   - Click on an endpoint to expand it and view details.\n   - Click the \"Try it out\" button, enter any required parameters, and click \"Execute\".\n\n3. **View Responses**: Swagger UI will display the response from the API. Successful responses will be shown with a status code of `200 OK`, and any relevant data will be displayed.\n\nRemember to include your specific authentication mechanism and details in the instructions, as well as any additional steps or considerations that may be unique to your API. This will help users effectively authenticate and test your endpoints using Swagger UI.",
-    
+    "description": "API documentation for the Deel backend application. ! This API provides endpoints for managing contracts, jobs, and profiles.\n\n## Authentication and Testing\n\nTo interact with this API on Swagger UI, you'll need to follow these steps:\n\n1. **Authorize Swagger UI**: Click the \"Authorize\" button on the top right corner of Swagger UI. In the \"Value\" field, enter your `profile_id` and click \"Authorize\". This `profile_id` will be used for authentication.\n\n2. **Testing Endpoints**:\n   - Browse through the available endpoints in the Swagger UI interface.\n   - Click on an endpoint to expand it and view details.\n   - Click the \"Try it out\" button, enter any required parameters, and click \"Execute\".\n\n3. **View Responses**: Swagger UI will display the response from the API. Successful responses will be shown with a status code of `200 OK`, and any relevant data will be displayed.\n\nRemember to include your specific authentication mechanism and details in the instructions, as well as any additional steps or considerations that may be unique to your API. This will help users effectively authenticate and test your endpoints using Swagger UI.",
+
     "version": "1.0.0",
     "contact": {
       "name": "Richard Okonicha",
       "email": "richardokonicha@gmail.com"
     }
   },
-   "tags": [
+  "tags": [
     {
       "name": "Contracts",
       "description": "Operations related to contracts"
@@ -28,7 +28,7 @@
       "description": "Operations related to admin"
     }
   ],
-   "security": [
+  "security": [
     {
       "ProfileAuthentication": []
     }
@@ -227,7 +227,7 @@
                   "example1": {
                     "value": {
                       "profession": "Software Engineer",
-                      "totalEarned": 1500.00
+                      "totalEarned": 1500.0
                     }
                   }
                 }
@@ -237,7 +237,7 @@
         }
       }
     },
-    
+
     "/admin/best-clients": {
       "get": {
         "tags": ["Admin"],
@@ -306,12 +306,12 @@
                       {
                         "id": 1,
                         "fullName": "Harry Potter",
-                        "paid": 1500.00
+                        "paid": 1500.0
                       },
                       {
                         "id": 2,
                         "fullName": "Mr Robot",
-                        "paid": 1200.50
+                        "paid": 1200.5
                       }
                     ]
                   }
@@ -429,5 +429,4 @@
       }
     }
   }
-
 }

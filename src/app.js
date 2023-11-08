@@ -1,20 +1,20 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const swaggerUI = require("swagger-ui-express");
-const { sequelize } = require("./model");
-const { Op } = require("sequelize");
-const { getProfile } = require("./middleware/getProfile");
-const specification = require("./swagger.json");
+const express = require('express');
+const bodyParser = require('body-parser');
+const swaggerUI = require('swagger-ui-express');
+const { sequelize } = require('./model');
+const { Op } = require('sequelize');
+const { getProfile } = require('./middleware/getProfile');
+const specification = require('./swagger.json');
 const app = express();
 
 app.use(bodyParser.json());
-app.use("/docs", swaggerUI.serve, swaggerUI.setup(specification));
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(specification));
 
-app.set("sequelize", sequelize);
-app.set("models", sequelize.models);
+app.set('sequelize', sequelize);
+app.set('models', sequelize.models);
 
-app.get("/contracts/:id", getProfile, async (req, res) => {
-  const { Contract, Profile } = req.app.get("models");
+app.get('/contracts/:id', getProfile, async (req, res) => {
+  const { Contract, Profile } = req.app.get('models');
   const { id } = req.params;
   const { profile } = req;
 
@@ -22,13 +22,13 @@ app.get("/contracts/:id", getProfile, async (req, res) => {
     const contract = await Contract.findOne({
       where: { id },
       include: [
-        { model: Profile, as: "Client" },
-        { model: Profile, as: "Contractor" }
-      ]
+        { model: Profile, as: 'Client' },
+        { model: Profile, as: 'Contractor' },
+      ],
     });
 
     if (!contract) {
-      return res.status(404).json({ error: "Contract not found" });
+      return res.status(404).json({ error: 'Contract not found' });
     }
 
     if (
@@ -36,19 +36,19 @@ app.get("/contracts/:id", getProfile, async (req, res) => {
       contract.Contractor.id !== profile.id
     ) {
       return res.status(403).json({
-        error: "Unauthorized - Profile not associated with this contract"
+        error: 'Unauthorized - Profile not associated with this contract',
       });
     }
 
     res.json(contract);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-app.get("/contracts", getProfile, async (req, res) => {
-  const { Contract, Profile } = req.app.get("models");
+app.get('/contracts', getProfile, async (req, res) => {
+  const { Contract, Profile } = req.app.get('models');
   const { profile } = req;
 
   try {
@@ -56,57 +56,57 @@ app.get("/contracts", getProfile, async (req, res) => {
       where: {
         [Op.or]: [{ ClientId: profile.id }, { ContractorId: profile.id }],
         status: {
-          [Op.not]: "terminated"
-        }
+          [Op.not]: 'terminated',
+        },
       },
       include: [
-        { model: Profile, as: "Client" },
-        { model: Profile, as: "Contractor" }
-      ]
+        { model: Profile, as: 'Client' },
+        { model: Profile, as: 'Contractor' },
+      ],
     });
 
     res.json(contracts);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-app.get("/jobs/unpaid", getProfile, async (req, res) => {
-  const { Job, Profile, Contract } = req.app.get("models");
+app.get('/jobs/unpaid', getProfile, async (req, res) => {
+  const { Job, Profile, Contract } = req.app.get('models');
   const { profile } = req;
 
   try {
     const unpaidJobs = await Job.findAll({
       where: {
         paid: {
-          [Op.or]: [false, null]
-        }
+          [Op.or]: [false, null],
+        },
       },
       include: [
         {
           model: Contract,
           where: {
-            status: "in_progress",
-            [Op.or]: [{ ClientId: profile.id }, { ContractorId: profile.id }]
+            status: 'in_progress',
+            [Op.or]: [{ ClientId: profile.id }, { ContractorId: profile.id }],
           },
           include: [
-            { model: Profile, as: "Client" },
-            { model: Profile, as: "Contractor" }
-          ]
-        }
-      ]
+            { model: Profile, as: 'Client' },
+            { model: Profile, as: 'Contractor' },
+          ],
+        },
+      ],
     });
 
     res.json(unpaidJobs);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-app.post("/jobs/:job_id/pay", getProfile, async (req, res) => {
-  const { Job, Profile, Contract } = req.app.get("models");
+app.post('/jobs/:job_id/pay', getProfile, async (req, res) => {
+  const { Job, Profile, Contract } = req.app.get('models');
   const { profile } = req;
   const { job_id } = req.params;
 
@@ -115,16 +115,16 @@ app.post("/jobs/:job_id/pay", getProfile, async (req, res) => {
       where: {
         id: job_id,
         paid: {
-          [Op.or]: [false, null]
-        }
+          [Op.or]: [false, null],
+        },
       },
       include: [
-        { model: Contract, include: [{ model: Profile, as: "Contractor" }] }
-      ]
+        { model: Contract, include: [{ model: Profile, as: 'Contractor' }] },
+      ],
     });
 
     if (!job) {
-      return res.status(404).json({ error: "Job not found or already paid" });
+      return res.status(404).json({ error: 'Job not found or already paid' });
     }
 
     const client = await Profile.findOne({ where: { id: profile.id } });
@@ -147,51 +147,51 @@ app.post("/jobs/:job_id/pay", getProfile, async (req, res) => {
         );
         await transaction.commit();
 
-        res.json({ message: "Payment successful" });
+        res.json({ message: 'Payment successful' });
       } catch (error) {
         await transaction.rollback();
         console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: 'Internal Server Error' });
       }
     } else {
-      res.status(403).json({ error: "Insufficient balance" });
+      res.status(403).json({ error: 'Insufficient balance' });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-app.post("/balances/deposit/:userId", getProfile, async (req, res) => {
-  const { Job, Contract } = req.app.get("models");
+app.post('/balances/deposit/:userId', getProfile, async (req, res) => {
+  const { Job, Contract } = req.app.get('models');
   const { profile } = req;
   const { userId } = req.params;
 
   try {
-    if (profile.type !== "client") {
-      return res.status(403).json({ error: "Only clients can make deposits" });
+    if (profile.type !== 'client') {
+      return res.status(403).json({ error: 'Only clients can make deposits' });
     }
 
     if (profile.id !== Number(userId)) {
       return res.status(403).json({
-        error: "Unauthorized - You can only deposit to your own account"
+        error: 'Unauthorized - You can only deposit to your own account',
       });
     }
 
-    const totalJobsToPay = await Job.sum("price", {
+    const totalJobsToPay = await Job.sum('price', {
       where: {
         paid: {
-          [Op.or]: [false, null]
+          [Op.or]: [false, null],
         },
-        "$Contract.ClientId$": profile.id
+        '$Contract.ClientId$': profile.id,
       },
-      include: [{ model: Contract }]
+      include: [{ model: Contract }],
     });
 
     const maxDepositAmount = totalJobsToPay * 0.25;
 
     if (maxDepositAmount <= 0) {
-      return res.status(403).json({ error: "No pending jobs to pay for" });
+      return res.status(403).json({ error: 'No pending jobs to pay for' });
     }
 
     const depositAmount = Math.min(maxDepositAmount, req.body.amount);
@@ -205,21 +205,20 @@ app.post("/balances/deposit/:userId", getProfile, async (req, res) => {
       await transaction.commit();
 
       res.json({
-        message: `Deposit of $${depositAmount} successful. New balance: $${updatedProfile.balance}`
+        message: `Deposit of $${depositAmount} successful. New balance: $${updatedProfile.balance}`,
       });
     } catch (error) {
       await transaction.rollback();
       console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-app.get("/admin/best-profession", async (req, res) => {
-  const { Profile, Job } = req.app.get("models");
+app.get('/admin/best-profession', async (req, res) => {
   const { start, end } = req.query;
 
   try {
@@ -235,22 +234,22 @@ app.get("/admin/best-profession", async (req, res) => {
              LIMIT 1`,
       {
         replacements: { start, end },
-        type: sequelize.QueryTypes.SELECT
+        type: sequelize.QueryTypes.SELECT,
       }
     );
 
     if (results.length > 0) {
       res.json(results[0]);
     } else {
-      res.json({ message: "No data available for the specified time range" });
+      res.json({ message: 'No data available for the specified time range' });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-app.get("/admin/best-clients", async (req, res) => {
+app.get('/admin/best-clients', async (req, res) => {
   const { start, end, limit = 2 } = req.query;
 
   try {
@@ -267,14 +266,14 @@ app.get("/admin/best-clients", async (req, res) => {
              LIMIT :limit`,
       {
         replacements: { start, end, limit: Number(limit) },
-        type: sequelize.QueryTypes.SELECT
+        type: sequelize.QueryTypes.SELECT,
       }
     );
 
     res.json(results);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
