@@ -1,0 +1,433 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Deel Backend API",
+     "description": "API documentation for the Deel backend application. ! This API provides endpoints for managing contracts, jobs, and profiles.\n\n## Authentication and Testing\n\nTo interact with this API on Swagger UI, you'll need to follow these steps:\n\n1. **Authorize Swagger UI**: Click the \"Authorize\" button on the top right corner of Swagger UI. In the \"Value\" field, enter your `profile_id` and click \"Authorize\". This `profile_id` will be used for authentication.\n\n2. **Testing Endpoints**:\n   - Browse through the available endpoints in the Swagger UI interface.\n   - Click on an endpoint to expand it and view details.\n   - Click the \"Try it out\" button, enter any required parameters, and click \"Execute\".\n\n3. **View Responses**: Swagger UI will display the response from the API. Successful responses will be shown with a status code of `200 OK`, and any relevant data will be displayed.\n\nRemember to include your specific authentication mechanism and details in the instructions, as well as any additional steps or considerations that may be unique to your API. This will help users effectively authenticate and test your endpoints using Swagger UI.",
+    
+    "version": "1.0.0",
+    "contact": {
+      "name": "Richard Okonicha",
+      "email": "richardokonicha@gmail.com"
+    }
+  },
+   "tags": [
+    {
+      "name": "Contracts",
+      "description": "Operations related to contracts"
+    },
+    {
+      "name": "Jobs",
+      "description": "Operations related to jobs"
+    },
+    {
+      "name": "Balances",
+      "description": "Operations related to balances"
+    },
+    {
+      "name": "Admin",
+      "description": "Operations related to admin"
+    }
+  ],
+   "security": [
+    {
+      "ProfileAuthentication": []
+    }
+  ],
+  "paths": {
+    "/contracts/{id}": {
+      "get": {
+        "tags": ["Contracts"],
+        "summary": "Get Contract by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the contract to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contract"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Contract not found"
+          }
+        }
+      }
+    },
+    "/contracts": {
+      "get": {
+        "tags": ["Contracts"],
+        "summary": "Get List of Contracts",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Contract"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/jobs/unpaid": {
+      "get": {
+        "tags": ["Jobs"],
+        "summary": "Get Unpaid Jobs",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Job"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/jobs/{job_id}/pay": {
+      "post": {
+        "tags": ["Jobs"],
+        "summary": "Pay for a Job",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the job to pay for"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment successful"
+          },
+          "403": {
+            "description": "Insufficient balance"
+          },
+          "404": {
+            "description": "Job not found or already paid"
+          }
+        }
+      }
+    },
+    "/balances/deposit/{userId}": {
+      "post": {
+        "tags": ["Balances"],
+        "summary": "Deposit Money",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the user to deposit money for"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deposit successful"
+          },
+          "403": {
+            "description": "Unauthorized or Invalid user ID"
+          }
+        }
+      }
+    },
+    "/admin/best-profession": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Get Best Profession",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Start date for the query",
+            "examples": {
+              "example1": {
+                "value": "2023-11-01"
+              }
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "End date for the query",
+            "examples": {
+              "example1": {
+                "value": "2023-11-30"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BestProfessionResponse"
+                },
+                "examples": {
+                  "example1": {
+                    "value": {
+                      "profession": "Software Engineer",
+                      "totalEarned": 1500.00
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    "/admin/best-clients": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Get Best Clients",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Start date for the query",
+            "examples": {
+              "example1": {
+                "value": "2023-11-01"
+              }
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "End date for the query",
+            "examples": {
+              "example1": {
+                "value": "2023-11-30"
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit for the number of best clients to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 2
+            },
+            "examples": {
+              "example1": {
+                "value": 2
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BestClientsResponse"
+                  }
+                },
+                "examples": {
+                  "example1": {
+                    "value": [
+                      {
+                        "id": 1,
+                        "fullName": "Harry Potter",
+                        "paid": 1500.00
+                      },
+                      {
+                        "id": 2,
+                        "fullName": "Mr Robot",
+                        "paid": 1200.50
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Contract": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the contract"
+          },
+          "terms": {
+            "type": "string",
+            "description": "Terms and conditions of the contract"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["new", "in_progress", "terminated"],
+            "description": "Status of the contract (new, in progress, terminated)"
+          }
+        }
+      },
+
+      "Job": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the job"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the job"
+          },
+          "price": {
+            "type": "number",
+            "description": "Price associated with the job"
+          },
+          "paid": {
+            "type": "boolean",
+            "description": "Flag indicating if the job has been paid"
+          },
+          "paymentDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time of payment for the job"
+          }
+        }
+      },
+
+      "PayRequest": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Amount to pay for the job"
+          }
+        }
+      },
+      "DepositRequest": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Amount to deposit"
+          }
+        }
+      },
+      "BestProfessionResponse": {
+        "type": "object",
+        "properties": {
+          "profession": {
+            "type": "string",
+            "description": "Profession with highest earnings"
+          },
+          "totalEarned": {
+            "type": "number",
+            "description": "Total earnings for the profession"
+          }
+        }
+      },
+      "BestClientsResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Client's ID"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Client's full name"
+          },
+          "paid": {
+            "type": "number",
+            "description": "Total amount paid by the client"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ProfileAuthentication": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "profile_id",
+        "description": "Authentication using profile ID"
+      }
+    }
+  }
+
+}
