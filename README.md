@@ -1,6 +1,3 @@
-# deel-task
-Hometask Backend &amp; React Frontend
-
 # Deel Task App
 
 This is a Node.js application that manages contracts, jobs, and payments for clients and contractors.
@@ -36,6 +33,10 @@ npm start
 
 The server will run on `http://localhost:3000`.
 
+## OpenAPI Specification
+
+You can view and interact with the API using the Swagger UI. Start the server and navigate to `http://localhost:3000/docs`.
+
 ## Endpoints
 
 ### Contracts
@@ -56,10 +57,6 @@ The server will run on `http://localhost:3000`.
 
 - `GET /admin/best-profession`: Get the best profession based on earnings within a specified date range.
 - `GET /admin/best-clients`: Get a list of best clients based on payments within a specified date range.
-
-## OpenAPI Specification
-
-You can view and interact with the API using the Swagger UI. Start the server and navigate to `http://localhost:3000/docs`.
 
 ## Testing
 
