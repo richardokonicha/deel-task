@@ -12,7 +12,7 @@
     "swagger-ui-express": "^5.0.0"
   },
   "scripts": {
-    "start": "nodemon ./src/server.js",
+    "start": "node api.js && nodemon ./src/server.js",
     "seed": "node ./scripts/seedDb.js",
     "test": "mocha src",
     "lint": "eslint .",
@@ -25,7 +25,7 @@
     "eslint": "^8.53.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
-    "mocha": "^10.2.0",
+    "mocha": "^10.8.2",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "supertest": "^6.3.3"
